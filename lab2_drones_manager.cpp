@@ -9,7 +9,8 @@ DronesManager::~DronesManager() {
 }
 
 bool operator==(const DronesManager::DroneRecord& lhs, const DronesManager::DroneRecord& rhs) {
-	return false;
+	return (lhs.prev == rhs.prev) && (lhs.next == rhs.next) && (lhs.droneID == rhs.droneID) 
+		&& (lhs.range == rhs.range) && (lhs.yearBought == rhs.yearBought);
 }
 
 unsigned int DronesManager::get_size() const {
@@ -21,7 +22,15 @@ bool DronesManager::empty() const {
 }
 
 DronesManager::DroneRecord DronesManager::select(unsigned int index) const {
-	return DroneRecord();
+	DroneRecord* curr = first;
+	if (curr == NULL) {
+		return DroneRecord(0);
+	} else {
+		for (int i = 1; i < (int)index && curr; i++) {
+			curr = curr->next;
+		}
+	}
+	return *curr;
 }
 
 unsigned int DronesManager::search(DroneRecord value) const {
@@ -47,7 +56,25 @@ void DronesManager::print() const {
 }
 
 bool DronesManager::insert(DroneRecord value, unsigned int index) {
-	return false;
+	if (!first || index == 0) {
+		insert_front(value);
+		++size;
+		return true;
+	}
+	else {
+		DroneRecord* val = new DroneRecord(value);
+		DroneRecord* curr = first;
+		for (int i = 0; i < (int)index; i++) {
+			if (!(curr->next)) {
+				return false;
+			}
+			curr = curr->next;
+		}
+		value.prev = curr->prev;
+		value.next = curr;
+		++size;
+		return true;
+	}
 }
 
 bool DronesManager::insert_front(DroneRecord value) {
@@ -68,7 +95,26 @@ bool DronesManager::insert_back(DroneRecord value) {
 }
 
 bool DronesManager::remove(unsigned int index) {
-	return false;
+	if (index == 0) {
+		remove_front();
+	}
+	DroneRecord* curr = first;
+	if (!curr) {
+		return false;
+	}
+	for (int i = 0; i < (int)index; i ++) {
+		if (!(curr->next)) {
+			remove_back();
+			--size;
+			return true;	
+		}
+	}
+	DroneRecord* back = curr->prev;
+	back->next = curr->next;
+	delete curr;
+	curr = NULL;
+	--size;
+	return true;
 }
 
 bool DronesManager::remove_front() {
@@ -91,7 +137,22 @@ bool DronesManager::remove_back() {
 }
 
 bool DronesManager::replace(unsigned int index, DroneRecord value) {
-	return false;
+	if (!first) {
+		return false;	
+	}
+	else {
+		DroneRecord* curr = first;
+		for (int i = 0; i < (int)index && curr; i++) {
+			if (!curr -> next) {
+				return false;
+			}
+			curr = curr->next;
+			
+		}
+		*curr = value;
+
+		return true;
+	}
 }
 
 bool DronesManager::reverse_list() {
