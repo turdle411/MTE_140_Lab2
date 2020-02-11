@@ -13,7 +13,7 @@ bool operator==(const DronesManager::DroneRecord& lhs, const DronesManager::Dron
 }
 
 unsigned int DronesManager::get_size() const {
-	return 0;
+	return size;
 }
 
 bool DronesManager::empty() const {
@@ -25,7 +25,22 @@ DronesManager::DroneRecord DronesManager::select(unsigned int index) const {
 }
 
 unsigned int DronesManager::search(DroneRecord value) const {
-	return 0;
+	DroneRecord* temp = first;
+    unsigned int index = 0;
+    
+//    if(empty())
+//        return 0;
+//
+    do {
+        if (*temp == value)
+            return index;
+        
+        temp = temp -> next;
+        index ++;
+        
+    }while(temp != last);
+    
+    return size; //if the list is empty, size is set to zero anyway (no need for a condition operator)
 }
 
 void DronesManager::print() const {
@@ -36,6 +51,15 @@ bool DronesManager::insert(DroneRecord value, unsigned int index) {
 }
 
 bool DronesManager::insert_front(DroneRecord value) {
+	if (first){
+		value.next = first;
+		value.prev = NULL;
+		first = new DroneRecord(value); //should be our default copy constructor
+		first->next->prev = first;
+		size++;
+		return true;
+    	}
+    
 	return false;
 }
 
@@ -48,7 +72,18 @@ bool DronesManager::remove(unsigned int index) {
 }
 
 bool DronesManager::remove_front() {
-	return false;
+	DroneRecord* front = first;
+    
+    if (!first)
+        return false;
+    
+    first = first -> next;
+    
+    if (first -> next)
+        first -> next -> prev = NULL;
+    
+    delete front;
+    return true;
 }
 
 bool DronesManager::remove_back() {
